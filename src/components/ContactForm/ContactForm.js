@@ -1,33 +1,67 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styles from '../ContactForm/ContactForm.module.css';
 
-function ContactForm({ name, number, onChange, onSubmit }) {
-  return (
-    <form className={styles.contactForm} onSubmit={onSubmit}>
-      <label className={styles.contactFormInput}>
-        Name
-        <input type="text" name="name" value={name} onChange={onChange}></input>
-      </label>
-      <label className={styles.contactFormInput}>
-        Number
-        <input
-          type="text"
-          name="number"
-          value={number}
-          onChange={onChange}
-        ></input>
-      </label>
-      <button type="submit">Add contact</button>
-    </form>
-  );
+export default class ContactForm extends Component {
+  static propTypes = {
+    contacts: PropTypes.array,
+    onSubmit: PropTypes.func.isRequired,
+  };
+
+  state = { name: '', number: '' };
+
+  resetState() {
+    this.setState({ name: '', number: '' });
+  }
+
+  handleChange = e => {
+    const { name, value } = e.target;
+    this.setState({ [name]: value });
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+
+    const { name } = this.state;
+    const { contacts, onSubmit } = this.props;
+
+    if (
+      contacts.find(
+        contact => contact.name.toLowerCase() === name.toLowerCase(),
+      )
+    ) {
+      alert(`${name} is already in contacts.`);
+      return;
+    } else if (!name) return;
+
+    onSubmit({ ...this.state });
+
+    this.resetState();
+  };
+
+  render() {
+    return (
+      <form className={styles.contactForm} onSubmit={this.handleSubmit}>
+        <label className={styles.contactFormInput}>
+          <span>Name</span>
+          <input
+            type="text"
+            name="name"
+            value={this.state.name}
+            onChange={this.handleChange}
+          ></input>
+        </label>
+        <label className={styles.contactFormInput}>
+          <span>Number</span>
+          <input
+            type="text"
+            name="number"
+            value={this.state.number}
+            onChange={this.handleChange}
+          ></input>
+        </label>
+        <button type="submit">Add contact</button>
+      </form>
+    );
+  }
 }
-
-ContactForm.propTypes = {
-  name: PropTypes.string,
-  number: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
-};
-
-export default ContactForm;

@@ -12,42 +12,24 @@ const filterContacts = (contacts, filter) => {
 
 export default class App extends Component {
   state = {
-    contacts: [{ id: 'id-4', name: 'Annie Copeland', number: '227-91-26' }],
+    contacts: [],
     filter: '',
-    name: '',
-    number: '',
+  };
+
+  addContact = contact => {
+    const contactToAdd = {
+      ...contact,
+      id: uuidv4(),
+    };
+
+    this.setState(state => ({
+      contacts: [...state.contacts, contactToAdd],
+    }));
   };
 
   handleChange = e => {
     const { name, value } = e.target;
     this.setState({ [name]: value });
-  };
-
-  handleSubmit = e => {
-    e.preventDefault();
-
-    const { contacts, name, number } = this.state;
-
-    if (
-      contacts.find(
-        contact => contact.name.toLowerCase() === name.toLowerCase(),
-      )
-    ) {
-      alert(`${name} is already in contacts.`);
-      return;
-    }
-
-    const inputedContact = {
-      name: name,
-      number: number,
-      id: uuidv4(),
-    };
-
-    this.setState(() => ({
-      contacts: [...contacts, inputedContact],
-      name: '',
-      number: '',
-    }));
   };
 
   handleDeleteContact = id => {
@@ -65,19 +47,19 @@ export default class App extends Component {
       <Fragment>
         <h2>Phonebook</h2>
         <ContactForm
-          name={this.state.name}
-          number={this.state.number}
-          onChange={this.handleChange}
-          onSubmit={this.handleSubmit}
+          contacts={this.state.contacts}
+          onSubmit={this.addContact}
         />
-        <h2>Contacts</h2>
+        {this.state.contacts.length >= 1 && <h2>Contacts</h2>}
         {this.state.contacts.length >= 2 && (
           <Filter filter={this.filter} onChange={this.handleChange} />
         )}
-        <ContactsList
-          contacts={filteredContacts}
-          onDelete={this.handleDeleteContact}
-        />
+        {this.state.contacts.length >= 1 && (
+          <ContactsList
+            contacts={filteredContacts}
+            onDelete={this.handleDeleteContact}
+          />
+        )}
       </Fragment>
     );
   }
