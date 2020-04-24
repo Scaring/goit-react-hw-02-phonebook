@@ -54,7 +54,7 @@ export default class ContactForm extends Component {
         <label className={styles.contactFormInput}>
           <span>Number</span>
           <input
-            type="text"
+            type="number"
             name="number"
             value={this.state.number}
             onChange={this.handleChange}

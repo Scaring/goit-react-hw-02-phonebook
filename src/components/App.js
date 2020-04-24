@@ -12,7 +12,12 @@ const filterContacts = (contacts, filter) => {
 
 export default class App extends Component {
   state = {
-    contacts: [],
+    contacts: [
+      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+    ],
     filter: '',
   };
 
@@ -33,9 +38,17 @@ export default class App extends Component {
   };
 
   handleDeleteContact = id => {
+    const { contacts, filter } = this.state;
+
     this.setState(state => ({
       contacts: state.contacts.filter(contact => contact.id !== id),
     }));
+
+    const filteredContacts = filterContacts(contacts, filter);
+
+    if (filteredContacts.length === 1) {
+      this.setState({ filter: '' });
+    }
   };
 
   render() {
@@ -46,19 +59,17 @@ export default class App extends Component {
     return (
       <Fragment>
         <h2>Phonebook</h2>
-        <ContactForm
-          contacts={this.state.contacts}
-          onSubmit={this.addContact}
-        />
-        {this.state.contacts.length >= 1 && <h2>Contacts</h2>}
-        {this.state.contacts.length >= 2 && (
-          <Filter filter={this.filter} onChange={this.handleChange} />
-        )}
-        {this.state.contacts.length >= 1 && (
+        <ContactForm contacts={contacts} onSubmit={this.addContact} />
+        {contacts.length >= 1 && (
           <ContactsList
             contacts={filteredContacts}
             onDelete={this.handleDeleteContact}
-          />
+          >
+            <h2>Contacts</h2>
+            {contacts.length >= 2 && (
+              <Filter filter={filter} onChange={this.handleChange} />
+            )}
+          </ContactsList>
         )}
       </Fragment>
     );
